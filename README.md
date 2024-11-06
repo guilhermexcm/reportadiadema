@@ -25,4 +25,4 @@ Repository for the report project for Diadema city.
 
 ![image](https://github.com/user-attachments/assets/a3b0ad31-b799-4fcb-b29b-f615b0374b46)
 
-![image](https://github.com/user-attachments/assets/b798659d-a762-481a-b64f-347ec5574c31)
+![image](https://github.com/user-attachments/assets/b335effd-cf75-4015-90da-fdd4447c93ac)
