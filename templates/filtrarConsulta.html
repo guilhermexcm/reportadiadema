@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/filtrarConsulta.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="consulta"><img src="{{ url_for('static', filename='logo.png') }}" href="Paginainicial" alt="Corinthians"></a>
+        </div>
+        <div class="page-title">
+            <h1>Reporta Diadema</h1>
+        </div>
+        <div class="btns">
+            <button class="PgInicialBtn">
+                <a href="Paginainicial"><i class="fas fa-undo"></i>Início</a>
+            </button>
+        </div>
+    </header>
+
+    <!-- <div class="message-box">
+    <h3>Filtre sua busca de acordo com o que deseja saber:</h3>
+    <button class="PgConsultaBtn">
+        <a href="consulta.html"><i class="fas fa-undo"></i>Voltar</a>
+      </button>
+  </div> -->
+
+    <div class="container">
+        <div class="filtroSelect">
+            <i class="fa fa-filter" aria-hidden="true"></i>
+            <!--<div class="form-row" id="consulta-form">-->
+            <form method="GET" id="consulta-form" class="form-row">
+            <select id="tipo">
+                <option value="Problema">Problema</option>
+                <option value="Roubo">Roubo</option>
+                <option value="Iluminação">Iluminação</option>
+                <option value="Buraco">Buraco</option>
+            </select>
+         <!--   <button type="submit" id="btn_selecao"><i class="fa-solid fa-magnifying-glass"></i></button> -->
+                <label for="bairro">Bairro:</label>
+                    <select name="bairro" id="bairro" class="filter-select">
+                      <option value=""></option>
+                      <option value="Canhema">Canhema</option>
+                      <option value="Campanário">Campanário</option>
+                      <option value="Casa Grande">Casa Grande</option>
+                      <option value="Centro">Centro</option>
+                      <option value="Conceição">Conceição</option>
+                      <option value="Eldorado">Eldorado</option>
+                      <option value="Inamar">Inamar</option>
+                      <option value="Piraporinha">Piraporinha</option>
+                      <option value="Taboão">Taboão</option>
+                      <option value="Serraria">Serraria</option>
+                      <option value="Vila Nogueira">Vila Nogueira</option>
+                    </select>
+              <!--   <input maxlength="50" type="text" id="endereco" name="endereco">
+               <button type="submit" id="btn_endereco"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <label for="crime">Crime:</label>
+                <select>
+                    <option value="crime">Selecione</option>
+                    <option value="crime1">Crime1</option>
+                    <option value="crime2">Crime2</option>
+                    <option value="crime3">Crime3</option>
+                </select>
+                <button type="submit" id="btn_crime"><i class="fa-solid fa-magnifying-glass"></i></button>-->
+               <label for="periodo">Periodo:</label>
+            <select class="form-row" id=periodo>
+                <option value=""></option>
+                <option value="Manhã">Manhã</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noite">Noite</option>
+                <option value="Madrugada">Madrugada</option>
+            </select>
+                <!--<input type="text" id="bairro" name="bairro">-->
+                <button type="submit" id="btn_bairro"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </form>
+           <!-- </div>-->
+            <button class="VoltarBtn">
+                <a href="consulta"><i class="fas fa-undo"></i>Limpar</a>
+            </button>
+        </div>
+    </div>
+    <!-- <div class="container">
+    <div class="filtro">
+      <h3><i class="fa fa-filter" aria-hidden="true"></i>
+        <div>Filtrar</div></h3>
+    </div>
+    <div class="btn_rua">
+      Rua: <input type="text">
+      <button><i class="fa fa-search" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="btn_bairro">
+      Bairro: <input type="text">
+      <button><i class="fa fa-search" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="btn_tipoCrime">
+      Tipo de Crime: <input type="text">
+      <button><i class="fa fa-search" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div> -->
+<div class="container-table">
+    <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th class="qtd">Qtd de Denúncias</th>
+                    <th class="endereco">Endereço</th>
+                    <th class="bairro">Bairro</th>
+                    <th class="horario">Horário</th>
+                    <th class="tipo">Tipo</th>
+                </tr>
+            </thead>
+            <tbody id="result-table">
+                <!-- Resultados irão aparecer aqui -->
+            </tbody>
+        </table>
+    </div>
+</div>
+  <!--<footer>
+    <p>Total de denúncias feitas no site: <span id="total-casos"></span></p>
+    <p>Última atualização em: <span id="data-atualizacao"></span></p>
+  </footer>-->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Chama a API ao carregar a página
+      fetch('https://m4h0.pythonanywhere.com/consulta?bairro=&periodo=', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          const tableBody = document.getElementById('result-table');
+          tableBody.innerHTML = ''; // Limpa os resultados anteriores
+      fetch('https://m4h0.pythonanywhere.com/consulta-dados-gerais', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('total-casos').innerText = data.total_casos;
+          document.getElementById('data-atualizacao').innerText = data.data_atualizacao;
+        })
+
+
+
+          // Verifica se há dados
+          if (data.length > 0) {
+            data.forEach(dado => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${dado[3]}</td>
+                <td>${dado[0]}</td>
+                <td>${dado[1]}</td>
+                <td>${dado[2]}</td>
+                <td>${dado[4]}</td>
+              `;
+              tableBody.appendChild(row);
+            });
+          } else {
+            tableBody.innerHTML = '<tr><td colspan="4">Nenhum resultado encontrado</td></tr>';
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao carregar os dados:', error);
+        });
+    });
+
+    document.getElementById('consulta-form').addEventListener('submit', function(event) {
+      event.preventDefault(); // Evita o reload da página
+
+      const bairro = document.getElementById('bairro').value;
+      const periodo = document.getElementById('periodo').value;
+      const tipo = document.getElementById('tipo').value;
+
+      // Ajuste o URL da API para o site correto
+      const apiUrl = 'https://m4h0.pythonanywhere.com/consulta';
+
+      // Faz a requisição para a API externa
+      fetch(`${apiUrl}?bairro=${bairro}&periodo=${periodo}&tipo=${tipo}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          const tableBody = document.getElementById('result-table');
+          tableBody.innerHTML = ''; // Limpa os resultados anteriores
+
+          // Verifica se há dados
+          if (data.length > 0) {
+            data.forEach(dado => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${dado[4]}</td>
+                <td>${dado[0]}</td>
+                <td>${dado[1]}</td>
+                <td>${dado[2]}</td>
+                 <td>${dado[3]}</td>
+              `;
+              tableBody.appendChild(row);
+            });
+          } else {
+            tableBody.innerHTML = '<tr><td colspan="4">Nenhum resultado encontrado</td></tr>';
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao carregar os dados:', error);
+        });
+
+      // Faz uma segunda requisição para obter o total de casos e a data da última atualização
+      fetch('https://m4h0.pythonanywhere.com/consulta-dados-gerais', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('total-casos').innerText = data.total_casos;
+          document.getElementById('data-atualizacao').innerText = data.data_atualizacao;
+        })
+        .catch(error => {
+          console.error('Erro ao carregar dados gerais:', error);
+        });
+    });
+  </script>
+</body>
+
+<footer>
+  <div style="display: flex; align-items: center; gap: 20px;">
+    <p>Total de denúncias feitas no site: <span id="total-casos"></span></p>
+    <p>Última atualização em: <span id="data-atualizacao"></span></p>
+
+    <button class="toggle-contrast" id="toggle-contrast">
+      <i class="fas fa-adjust"></i>
+    </button>
+  </div>
+
+  <style>
+    body {
+        background-color: #ffffff; /* Fundo padrão */
+        color: #333333; /* Texto padrão */
+        text-align: center;
+    }
+
+    .alto-contraste {
+        background-color: #000000; /* Fundo escuro */
+        color: #ffffff; /* Texto claro */
+    }
+
+    button, button[type] {
+        background-color: #000000; /* Fundo escuro */
+        color: #ffffff; /* Texto claro */
+        font-weight: bold;
+    }
+
+    header {
+        color: #ffffff; /* Texto claro */
+        text-align: center;
+    }
+
+    footer p {
+        margin: 0; /* Remove margens para melhor alinhamento */
+        text-align: center;
+    }
+
+    .toggle-contrast {
+        background-color: #000000; /* Fundo do botão em modo escuro */
+        color: #ffffff; /* Texto do botão em modo claro */
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 5px 10px;
+    }
+
+    .toggle-contrast:hover {
+        background-color: #333333; /* Efeito hover no botão */
+    }
+  </style>
+
+  <script src="{{ url_for('static', filename='js/consulta.js') }}"></script>
+</footer>
+
+</footer>
+</html>

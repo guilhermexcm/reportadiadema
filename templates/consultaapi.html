@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/consulta.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+  <header>
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logotipo">
+    </div>
+    <div class="page-title">
+      <h1>Reporta Diadema</h1>
+    </div>
+    <button class="PgInicialBtn">
+      <a href="/"><i class="fas fa-undo"></i>Página inicial</a>
+    </button>
+  </header>
+
+  <form id="consulta-form">
+    <select name="bairro" id="bairro" class="filter-select">
+      <option value="">Selecione o bairro</option>
+      <option value="Canhema">Canhema</option>
+      <option value="Campanário">Campanário</option>
+      <option value="Casa Grande">Casa Grande</option>
+      <option value="Centro">Centro</option>
+      <option value="Conceição">Conceição</option>
+      <option value="Eldorado">Eldorado</option>
+      <option value="Inamar">Inamar</option>
+      <option value="Piraporinha">Piraporinha</option>
+      <option value="Taboão">Taboão</option>
+      <option value="Serraria">Serraria</option>
+      <option value="Vila Nogueira">Vila Nogueira</option>
+    </select>
+    <select name="periodo" id="periodo" class="filter-select">
+      <option value="">Selecione o período</option>
+      <option value="Madrugada">Madrugada</option>
+      <option value="Manhã">Manhã</option>
+      <option value="Tarde">Tarde</option>
+      <option value="Noite">Noite</option>
+    </select>
+    <input type="submit" value="Filtrar" class="filtrar">
+  </form>
+
+  <div class="message-box">
+    <div class="titulo">
+      <h2>Casos registrados</h2>
+    </div>
+  </div>
+
+  <div class="container-table">
+    <table>
+      <thead>
+        <tr>
+          <th class="qtd">Qtd de Denúncias</th>
+          <th class="endereco">Endereço</th>
+          <th class="bairro">Bairro</th>
+          <th class="horario">Horário</th>
+        </tr>
+      </thead>
+      <tbody id="result-table">
+        <!-- Resultados irão aparecer aqui -->
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    <p>Total de denúncias feitas no site: <span id="itotal-casos"></span></p>
+    <p>Última atualização em: <span id="data-atualizacao"></span></p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Chama a API ao carregar a página
+      fetch('https://m4h0.pythonanywhere.com/consulta?bairro=&periodo=', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          const tableBody = document.getElementById('result-table');
+          tableBody.innerHTML = ''; // Limpa os resultados anteriores
+      fetch('https://m4h0.pythonanywhere.com/consulta-dados-gerais', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('itotal-casos').innerText = data.total_casos;
+          document.getElementById('data-atualizacao').innerText = data.data_atualizacao;
+        })
+
+
+
+          // Verifica se há dados
+          if (data.length > 0) {
+            data.forEach(dado => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${dado[3]}</td>
+                <td>${dado[0]}</td>
+                <td>${dado[1]}</td>
+                <td>${dado[2]}</td>
+              `;
+              tableBody.appendChild(row);
+            });
+          } else {
+            tableBody.innerHTML = '<tr><td colspan="4">Nenhum resultado encontrado</td></tr>';
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao carregar os dados:', error);
+        });
+    });
+
+    document.getElementById('consulta-form').addEventListener('submit', function(event) {
+      event.preventDefault(); // Evita o reload da página
+
+      const bairro = document.getElementById('bairro').value;
+      const periodo = document.getElementById('periodo').value;
+
+      // Ajuste o URL da API para o site correto
+      const apiUrl = 'https://m4h0.pythonanywhere.com/consulta';
+
+      // Faz a requisição para a API externa
+      fetch(`${apiUrl}?bairro=${bairro}&periodo=${periodo}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          const tableBody = document.getElementById('result-table');
+          tableBody.innerHTML = ''; // Limpa os resultados anteriores
+
+          // Verifica se há dados
+          if (data.length > 0) {
+            data.forEach(dado => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${dado[3]}</td>
+                <td>${dado[0]}</td>
+                <td>${dado[1]}</td>
+                <td>${dado[2]}</td>
+              `;
+              tableBody.appendChild(row);
+            });
+          } else {
+            tableBody.innerHTML = '<tr><td colspan="4">Nenhum resultado encontrado</td></tr>';
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao carregar os dados:', error);
+        });
+
+      // Faz uma segunda requisição para obter o total de casos e a data da última atualização
+      fetch('https://m4h0.pythonanywhere.com/consulta-dados-gerais', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('itotal-casos').innerText = data.total_casos;
+          document.getElementById('data-atualizacao').innerText = data.data_atualizacao;
+        })
+        .catch(error => {
+          console.error('Erro ao carregar dados gerais:', error);
+        });
+    });
+  </script>
+
+</body>
+
+</html>

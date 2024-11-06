@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporta Diadema</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/PaginaInicial.css') }}">
+
+  <script>
+    function enviarDenuncia(event) {
+      event.preventDefault(); // Impede o envio padrão do formulário
+
+      // Captura os dados do formulário
+      const rua = document.querySelector('input[name="rua"]').value;
+      const bairro = document.querySelector('select[name="bairro"]').value;
+      const periodo = document.querySelector('select[name="periodo"]').value;
+      const obs = document.querySelector('textarea[name="obs"]').value;
+
+      // Verifica se todos os campos obrigatórios foram preenchidos
+      if (!rua || !bairro || !periodo) {
+        alert('Por favor, preencha todos os campos obrigatórios!');
+        return;
+      }
+
+      // Dados a serem enviados
+      const dados = {
+        rua: rua,
+        bairro: bairro,
+        periodo: periodo,
+        obs: obs
+      };
+
+      // URL da API para onde os dados serão enviados
+      const apiUrl = 'https://m4h0.pythonanywhere.com/incidente'; // Altere para o URL correto da sua API
+
+      // Envio dos dados usando o Fetch API com POST
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(dados) // Converte os dados para JSON
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Agradecemos pela sua contribuição!'); // Alerta em caso de sucesso
+          document.getElementById('denuncia-form').reset(); // Reseta o formulário após envio
+        } else {
+          alert('Erro ao enviar os dados. Tente novamente mais tarde.');
+        }
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        alert('Ocorreu um erro ao enviar os dados. Verifique sua conexão ou tente novamente mais tarde.');
+      });
+    }
+  </script>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logotipo">
+    </div>
+    <div class="page-title"><h1>Reporta Diadema</h1></div>
+    <button class="consulta">
+      <a href="consulta">Consulta</a>
+    </button>
+    <button class="quemSomos">
+      <a href="quemSomos">Quem somos</a>
+    </button>
+  </header>
+
+  <div class="message-box">
+    <h3>Se você foi vítima de algum tipo de crime, utilize esse espaço para denunciar!</h3>
+  </div>
+
+  <div class="form-container">
+    <form id="denuncia-form" onsubmit="enviarDenuncia(event)"> <!-- Vincula o envio ao JavaScript -->
+      <div style="display: flex; align-items: center;">
+        <input maxlength="50" type="text" name="rua" placeholder="Rua onde ocorreu o crime" value="{{rua}}" required>
+      </div>
+      <div class="form-row">
+        <select name="bairro" required>
+          <option value="">Bairro</option>
+          <option value="Canhema" {% if bairro == "Canhema" %}selected{% endif %}>Canhema</option>
+          <option value="Campanário" {% if bairro == "Campanário" %}selected{% endif %}>Campanário</option>
+          <option value="Casa Grande" {% if bairro == "Casa Grande" %}selected{% endif %}>Casa Grande</option>
+          <option value="Centro" {% if bairro == "Centro" %}selected{% endif %}>Centro</option>
+          <option value="Conceição" {% if bairro == "Conceição" %}selected{% endif %}>Conceição</option>
+          <option value="Eldorado" {% if bairro == "Eldorado" %}selected{% endif %}>Eldorado</option>
+          <option value="Inamar" {% if bairro == "Inamar" %}selected{% endif %}>Inamar</option>
+          <option value="Piraporinha" {% if bairro == "Piraporinha" %}selected{% endif %}>Piraporinha</option>
+          <option value="Taboão" {% if bairro == "Taboão" %}selected{% endif %}>Taboão</option>
+          <option value="Serraria" {% if bairro == "Serraria" %}selected{% endif %}>Serraria</option>
+          <option value="Vila Nogueira" {% if bairro == "Vila Nogueira" %}selected{% endif %}>Vila Nogueira</option>
+        </select>
+        <select name="periodo" required>
+          <option value="">Horário</option>
+          <option value="Madrugada" {% if periodo == "Madrugada" %}selected{% endif %}>Madrugada</option>
+          <option value="Manhã" {% if periodo == "Manhã" %}selected{% endif %}>Manhã</option>
+          <option value="Tarde" {% if periodo == "Tarde" %}selected{% endif %}>Tarde</option>
+          <option value="Noite" {% if periodo == "Noite" %}selected{% endif %}>Noite</option>
+        </select>
+      </div>
+      <textarea name="obs"
+        placeholder="Descreva o ocorrido (informe pontos de referência e o que mais achar necessário)">{{obs}}</textarea>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <footer>Denuncie todo e qualquer tipo de crime às autoridades responsáveis!</footer>
+
+</body>
+
+</html>
