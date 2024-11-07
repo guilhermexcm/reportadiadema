@@ -89,8 +89,7 @@ h2{
       position: fixed;
       bottom: 0;
       width: 100%;
-      top:auto;
-
+      top:auto
     }
 
 
@@ -103,7 +102,6 @@ h2{
       justify-content: space-evenly;
     }
 
-        }
     .toggle-contrast {
       padding: 3px 8px;
       background-color: #007BFF;
